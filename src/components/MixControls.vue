@@ -29,16 +29,14 @@ export default {
 
       if(!audio.paused){
         audio.pause();
+        this.volume = 0
+
       }else{
         audio.loop=true
         this.volume = 1
-
         audio.play();
 
       }
-      
-        console.log(event.currentTarget.nextElementSibling.volume)
-
 
     }
   }
