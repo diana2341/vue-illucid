@@ -1,9 +1,10 @@
 <template>
   <div class="sound-control">
     <img  :src="require('../assets/images/' + sound.image)" @click="playAudio()"/>
-     <audio loop><source :src="require('../assets/audio/second-audio/' + sound.audio)"></audio> 
-    <input type="range"   min="0" max="1" step="0.01" :value="volume" @change="$emit('updateVolume',$event,sound.name)" >
-    </div>
+     <audio loop ref='audio'><source :src="require('../assets/audio/second-audio/' + sound.audio)"></audio> 
+    <input :ref='sound.name' type="range"   min="0" max="1" step="0.01" :value="volume" @change="$emit('updateVolume',$event,sound.name)" >
+  </div>
+
 </template>
 <script>
 export default {
@@ -12,6 +13,9 @@ export default {
         sound:{
           type:Object
         },
+        // message:{
+        //   type:String
+        // }
        
         
        },
