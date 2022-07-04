@@ -1,251 +1,423 @@
 <template>
-  <div class="add">
-    <form @submit="onSubmit" >
-      <input type="text" v-model="mixName" placeholder="Mix name...">
-      <input type="submit" value="Submit">
-    </form>
-    <div class="play-controls" >
-        <div class="inner-controls">
-            <button id='play' @click="playAll">▶</button>
-            <button id='pause' @click="pauseAll"><b>||</b></button>
-            <button id="reset" @click="resetAll"><b>↻</b> </button>
-        </div>  
-    </div>
-  <span v-bind:class="{'show':show}" id='toast'>{{message}}</span>
-    <div class="sound-container">
-      
-       <div v-for="sound in soundDictionary" :key='sound.id' >
-      <MixControls :sound="sound" @updateVolume="updateVolume" :message='message' ref='controls'/>
-      
-    </div>
-    </div>
-   
-  </div>
+	<div class="add">
+		<div class="form-container">
+			<form @submit="onSubmit">
+				<input type="text" v-model="mixName" placeholder="Mix name..." />
+				<input type="submit" value="Submit" />
+			</form>
+			<div class="play-controls">
+				<div class="inner-controls">
+					<button id="play" class="control-btn" @click="playAll">
+						<img src="~@/assets/play.png" />
+					</button>
+					<button id="pause" class="control-btn" @click="pauseAll">
+						<b><img src="~@/assets/stop.png" /></b>
+					</button>
+					<button id="reset" class="control-btn" @click="resetAll">
+						<b><img src="~@/assets/reset.png" /></b>
+					</button>
+				</div>
+			</div>
+		</div>
+		<MixPlay @playAudio="playAudio" @presets="presets" :userId="userId"/>
+		<span v-bind:class="{ show: show }" id="toast">{{ message }}</span>
+		<div class="sound-container">
+			<div v-for="sound in soundDictionary" :key="sound.id">
+				<MixControls
+					:sound="sound"
+					@updateVolume="updateVolume"
+					:message="message"
+					ref="controls"
+				/>
+			</div>
+		</div>
+	</div>
 </template>
 <script>
-import {mapActions, mapGetters} from 'vuex'
-import MixControls from './MixControls.vue'
-export default{
-  name:'MixForm',
-  components:{
-    MixControls
-  },
-  data(){
-    return{
-      mixName:'',
-      lightRainVolume:0,
-      heavyRainVolume:0,
-      largeFireVolume:0,
-      campfireVolume:0,
-      forestVolume:0,
-      riverVolume:0,
-      strongWindVolume:0,
-      lightWindVolume:0,
-      thunderVolume:0,
-      waveVolume:0,
-      coffeeShopVolume:0,
-      birdVolume:0,
-      catPurringVolume:0,
-      nightSoundVolume:0,
-      windChimeVolume:0,
-      message:'',
-      show:false
+import { mapActions, mapGetters } from "vuex";
+import MixControls from "./MixControls.vue";
+import MixPlay from './MixPlay.vue'
+export default {
+	name: "MixForm",
+	components: {
+		MixControls,
+    MixPlay
+	},
+	data() {
+		return {
+			mixName: "",
+			lightRainVolume: 0,
+			heavyRainVolume: 0,
+			largeFireVolume: 0,
+			campfireVolume: 0,
+			forestVolume: 0,
+			riverVolume: 0,
+			strongWindVolume: 0,
+			lightWindVolume: 0,
+			thunderVolume: 0,
+			waveVolume: 0,
+			coffeeShopVolume: 0,
+			birdVolume: 0,
+			catPurringVolume: 0,
+			nightSoundVolume: 0,
+			windChimeVolume: 0,
+			message: "",
+			show: false,
+		};
+	},
+  props:{
+    userId:{
+
     }
   },
-  methods:{
-  updateVolume(event,name){
-    event.currentTarget.previousElementSibling.volume=event.target.value
-        if(name==='rain'){
-          this.lightRainVolume=event.target.value
 
-        }else if(name==='bird'){
-          this.birdVolume=event.target.value
+	methods: {
+      playAudio(event,mix) {
+    this.$emit('playAudio', event,mix)
+  },
+		updateVolume(event, name) {
+			event.currentTarget.previousElementSibling.volume = event.target.value;
+      console.log(event.currentTarget.previousElementSibling.volume,name)
+			if (name === "rain") {
+				this.lightRainVolume = event.target.value;
+			} else if (name === "bird") {
+				this.birdVolume = event.target.value;
+			} else if (name === "regularFire") {
+				this.largeFireVolume = event.target.value;
+			} else if (name === "thunderCloud") {
+				this.heavyRainVolume = event.target.value;
+				//
+			} else if (name === "wave") {
+				this.waveVolume = event.target.value;
+			} else if (name === "strongWind") {
+				this.strongWindVolume = event.target.value;
+			} else if (name === "forest") {
+				this.forestVolume = event.target.value;
+			} else if (name === "thunder") {
+				this.thunderVolume = event.target.value;
+			} else if (name === "fire") {
+				this.campfireVolume = event.target.value;
+			} else if (name === "riverWave") {
+				this.riverVolume = event.target.value;
+			} else if (name === "simpleWind") {
+				this.lightWindVolume = event.target.value;
+			} else if (name === "cafe") {
+				this.coffeeShopVolume = event.target.value;
+			} else if (name === "cat") {
+				this.catPurringVolume = event.target.value;
+			} else if (name === "night") {
+				this.nightSoundVolume = event.target.value;
+			} else if (name === "chimes") {
+				this.windChimeVolume = event.target.value;
+			}
+		},
 
-        }else if(name==='regularFire'){
-          this.largeFireVolume=event.target.value
+		...mapActions(["addMix"]),
+		onSubmit(e) {
+			e.preventDefault();
+      let id = localStorage.getItem('illucidId')
+     let userId = id?id:this.userId
+			let data = {
+				mix_name: this.mixName,
+				user_id: userId,
+				light_rain_volume: this.lightRainVolume,
+				heavy_rain_volume: this.heavyRainVolume,
+				large_fire_volume: this.largeFireVolume,
+				campfire_volume: this.campfireVolume,
+				forest_volume: this.forestVolume,
+				river_volume: this.riverVolume,
+				strong_wind_volume: this.strongWindVolume,
+				light_wind_volume: this.lightWindVolume,
+				thunder_volume: this.thunderVolume,
+				wave_volume: this.waveVolume,
+				coffee_shop_volume: this.coffeeShopVolume,
+				bird_volume: this.coffeeShopVolume,
+				cat_purring_volume: this.catPurringVolume,
+				night_sound_volume: this.nightSoundVolume,
+				wind_chime_volume: this.windChimeVolume,
+			};
+      console.log('submitred')
+			this.addMix(data)
+      .then(()=>this.mixName="")
+		},
+		pauseAll() {
+			this.$refs.controls.map((control) => control.$refs.audio.pause());
+		},
+		playAll() {
+			this.$refs.controls.map((control) => {
+				if (parseFloat(control.$refs.audio.nextElementSibling.value) !== 0) {
+					control.$refs.audio.play();
+				}
+			});
+		},
+		resetAll() {
+			this.$refs.controls.map((control) => {
+				control.$refs.audio.nextElementSibling.value = 0;
+			});
+			this.pauseAll();
+		},
+    presets(event,name){
+      this.resetAll() 
+     
+      if(name==='rain'){
+      this.thunderVolume=0.36
+      this.windChimeVolume=0.06
+      this.heavyRainVolume=0.12
+       this.$refs.controls.map((control) => {
+				if(control.$refs.thunder){
+          control.$refs.thunder.value="0.36"
+          control.$refs.thunder.previousElementSibling.volume='0.36'
 
-        }else if(name==='thunderCloud'){
-          this.heavyRainVolume=event.target.value
-          // 
-        }else if(name==='wave'){
-          this.waveVolume=event.target.value
-
-        }else if(name==='strongWind'){
-          this.strongWindVolume=event.target.value
-
-        }else if(name==='forest'){
-          this.forestVolume=event.target.value
-
-        }else if(name==='thunder'){
-          this.thunderVolume=event.target.value
-
-        }else if(name==='fire'){
-          this.campfireVolume=event.target.value
-
-        }else if(name==='riverWave'){
-          this.riverVolume=event.target.value
-        }else if(name==='simpleWind'){
-
-          this.lightWindVolume=event.target.value
-        }else if(name==='cafe'){
-
-          this.coffeeShopVolume=event.target.value
-        }else if(name==='cat'){
-          this.catPurringVolume=event.target.value
-        }else if(name==='night'){
-          this.nightSoundVolume=event.target.value
-        }else if(name==='chimes'){
-          this.windChimeVolume=event.target.value
         }
-      },
+        if(control.$refs.chimes){
+          control.$refs.chimes.value='0.06'
 
-    ...mapActions(['addMix']),
-    onSubmit(e){
-      e.preventDefault();
-     let data={
-          mix_name:this.mixName,
-          user_id:1,
-          light_rain_volume:parseFloat(this.lightRainVolume),
-          heavy_rain_volume:parseFloat(this.heavyRainVolume),
-          large_fire_volume:parseFloat(this.largeFireVolume),
-          campfire_volume:parseFloat(this.campfireVolume),
-          forest_volume:parseFloat(this.forestVolume),
-          river_volume:parseFloat(this.riverVolume),
-          strong_wind_volume:parseFloat(this.strongWindVolume),
-          light_wind_volume:parseFloat(this.lightWindVolume),
-          thunder_volume:parseFloat(this.thunderVolume),
-          wave_volume:parseFloat(this.waveVolume),
-          coffee_shop_volume:parseFloat(this.coffeeShopVolume),
-          bird_volume:parseFloat(this.coffeeShopVolume),
-          cat_purring_volume:parseFloat(this.catPurringVolume),
-          night_sound_volume:parseFloat(this.nightSoundVolume),
-          wind_chime_volume:parseFloat(this.windChimeVolume)
+          control.$refs.chimes.previousElementSibling.volume='0.06'
 
-      }
-      this.addMix(data)
-      
-    },
-    pauseAll(){
-      this.$refs.controls.map(control=>control.$refs.audio.pause())
-    },
-     playAll(){
-      this.$refs.controls.map(control=>{
-        console.log( control.$refs.audio.nextElementSibling.value)
-        if(parseFloat(control.$refs.audio.nextElementSibling.value) !== 0){
-          control.$refs.audio.play()
         }
+        if(control.$refs.thunderCloud){
+          control.$refs.thunderCloud.value='0.12'
+              control.$refs.thunderCloud.previousElementSibling.volume='0.12'
+
+
+        }
+			});
+      this.playAll()
+
+      }else if(name === 'fall'){
+        this.birdVolume=0.16
+        this.riverVolume=0.13
+        this.largeFireVolume=0.2
+          this.$refs.controls.map((control) => {
+				if(control.$refs.bird){
+          control.$refs.bird.value="0.16"
+          control.$refs.bird.previousElementSibling.volume='0.16'
+
+
+        }
+        if(control.$refs.riverWave){
+          control.$refs.riverWave.value="0.06"
+          control.$refs.riverWave.previousElementSibling.volume='0.06'
+
+        }
+        if(control.$refs.regularFire){
+          control.$refs.regularFire.value='0.2'
+          control.$refs.regularFire.previousElementSibling.volume='0.2'
+
+        }
+			});
+              this.playAll()
+
+
+      }else if(name === 'night'){
+        this.nightSoundVolume=0.15
+        this.windChimeVolume=0.24
+        this.lightWindVolume=0.13
+         this.$refs.controls.map((control) => {
+				if(control.$refs.night){
+          control.$refs.night.value='0.15'
+          control.$refs.night.previousElementSibling.volume='0.15'
+
+        }
+        if(control.$refs.chimes){
+          control.$refs.chimes.value='0.24'
+          control.$refs.chimes.previousElementSibling.volume='0.24'
+
+        }
+        if(control.$refs.simpleWind){
+          control.$refs.simpleWind.value='0.13'
+          control.$refs.simpleWind.previousElementSibling.volume='0.13'
+
+        }
+			});
+              this.playAll()
+
       }
-      
-      )
-    },
-    resetAll(){
-      this.$refs.controls.map(control=>{
-        control.$refs.audio.nextElementSibling.value=0
-      }) 
-      this.pauseAll()
-
     }
-    
-  },
-  computed:mapGetters(['soundDictionary']),
-  // beforeCreate(){
-  //   alert('before create')
-  // },
-  // created(){
-  //   alert('created')
-  //   //For fetching any initial required data to be rendered(like JSON) from external API and assigning it to any reactive data properties
 
-  // },
-  // beforeMount(){
-  //   alert('b4 mount')
+	},
+	computed: mapGetters(["soundDictionary"]),
+	// beforeCreate(){
+	//   alert('before create')
+	// },
+	// created(){
+	//   alert('created')
+	//   //For fetching any initial required data to be rendered(like JSON) from external API and assigning it to any reactive data properties
 
-  // },
-  // mounted(){
-  //   alert('mounted')
-  //     // mounted(): called after the DOM has been mounted or rendered. Here you have access to the DOM elements and DOM manipulation can be performed for example get the innerHTML:
+	// },
+	// beforeMount(){
+	//   alert('b4 mount')
 
-  // },
+	// },
+	// mounted(){
+	//   alert('mounted')
+	//     // mounted(): called after the DOM has been mounted or rendered. Here you have access to the DOM elements and DOM manipulation can be performed for example get the innerHTML:
 
+	// },
 
-  // beforeUpdate(){
-  //   alert('b4 update')
-  // },
-  //  updated(){
-  //   alert('updates')
+	// beforeUpdate(){
+	//   alert('b4 update')
+	// },
+	//  updated(){
+	//   alert('updates')
 
-  // },
-  watch:{
-    lightRainVolume(volume){
-      if(parseFloat(volume) === 1){
-        this.message='Sound at max volume'
-        this.show='true'
-        setTimeout(()=>{
-          this.show=false
-        }, 3200);
-
-      }else if(parseFloat(volume) === 0){
-        this.message='Sound muted'
-        this.show='true'
-        setTimeout(()=>{
-          this.show=false
-        }, 3200);
-
-      }else{
-        this.show=false
-      }
-
-
-    }
-  }
-
-}
+	// },
+	watch: {
+		lightRainVolume(volume) {
+			if (parseFloat(volume) === 1) {
+				this.message = "Sound at max volume";
+				this.show = "true";
+				setTimeout(() => {
+					this.show = false;
+				}, 3200);
+			} else if (parseFloat(volume) === 0) {
+				this.message = "Sound muted";
+				this.show = "true";
+				setTimeout(() => {
+					this.show = false;
+				}, 3200);
+			} else {
+				this.show = false;
+			}
+		},
+	},
+};
 </script>
 <style scoped>
-  .sound-container{
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr ;
-  }
-  #toast {
-  visibility: hidden;
-  min-width: 250px;
-  margin-left: -200px;
-  background-color: white;
-  box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
-  color: black;
-  text-align: center;
-  border-radius: 10px;
-  padding: 16px;
-  position: fixed;
-  z-index: 1;
-  left: 50%;
-  bottom: 30px;
-  font-size: 16px;
+.sound-container {
+	display: grid;
+	grid-template-columns: 1fr 1fr 1fr;
+}
+#toast {
+	visibility: hidden;
+	min-width: 250px;
+	margin-left: -200px;
+	background-color: white;
+	box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+	color: black;
+	text-align: center;
+	border-radius: 10px;
+	padding: 16px;
+	position: fixed;
+	z-index: 1;
+	left: 50%;
+	bottom: 30px;
+	font-size: 16px;
 }
 
 #toast.show {
-  visibility: visible;
-  -webkit-animation: fadein 0.5s, fadeout 0.5s 3s;
-  animation: fadein 0.5s, fadeout 0.5s 3s;
+	visibility: visible;
+	-webkit-animation: fadein 0.5s, fadeout 0.5s 3s;
+	animation: fadein 0.5s, fadeout 0.5s 3s;
 }
 
 @-webkit-keyframes fadein {
-  from {bottom: 0; opacity: 0;} 
-  to {bottom: 30px; opacity: 1;}
+	from {
+		bottom: 0;
+		opacity: 0;
+	}
+	to {
+		bottom: 30px;
+		opacity: 1;
+	}
 }
 
 @keyframes fadein {
-  from {bottom: 0; opacity: 0;}
-  to {bottom: 30px; opacity: 1;}
+	from {
+		bottom: 0;
+		opacity: 0;
+	}
+	to {
+		bottom: 30px;
+		opacity: 1;
+	}
 }
 
 @-webkit-keyframes fadeout {
-  from {bottom: 30px; opacity: 1;} 
-  to {bottom: 0; opacity: 0;}
+	from {
+		bottom: 30px;
+		opacity: 1;
+	}
+	to {
+		bottom: 0;
+		opacity: 0;
+	}
 }
 
 @keyframes fadeout {
-  from {bottom: 30px; opacity: 1;}
-  to {bottom: 0; opacity: 0;}
+	from {
+		bottom: 30px;
+		opacity: 1;
+	}
+	to {
+		bottom: 0;
+		opacity: 0;
+	}
+}
+input[type="text"] {
+	background-color: #f7f8ff;
+	-webkit-border-radius: 45px;
+	-moz-border-radius: 45px;
+	border-radius: 45px;
+	font-size: 15px;
+	height: 45px;
+	border: none;
+	padding-left: 15px;
+	min-width: 50%;
+	margin-bottom: 10px;
+	border: solid 1px #186aad;
+}
+input[type="text"][placeholder] {
+	color: #656d79;
+	font-size: 15px;
+	font-weight: 500;
+}
+form {
+	position: relative;
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	justify-content: center;
+	right: -30px;
+}
+.play-controls {
+	margin: 0 auto;
+}
+input[type="submit"] {
+	/* position: absolute; */
+	background: #bbd6db;
+	color: #196aad;
+	border: none;
+	padding: 10px;
+	border-radius: 45px;
+	/* right: 21em; */
+	min-height: 47px;
+	top: 0;
+	min-width: 80px;
+	font-weight: 800;
+	right: 5em;
+	top: -5px;
+	position: relative;
+}
+.control-btn {
+	background: transparent;
+	border: none;
+}
+.control-btn img {
+	width: 35px;
+	cursor: pointer;
+	filter: invert(85%) sepia(4%) saturate(958%) hue-rotate(141deg) brightness(101%) contrast(88%);
+}
+.form-container {
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+
+	padding-bottom: 22px;
+	margin-top: 1em;
+}
+img {
+	/* filter: invert(100%); */
 }
 
 </style>

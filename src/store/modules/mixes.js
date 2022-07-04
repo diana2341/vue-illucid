@@ -1,6 +1,9 @@
 import axios from "axios";
+axios.defaults.headers.common["Access-Control-Allow-Origin"] = "*";
 
 const state = {
+	time: "",
+
 	mixes: [],
 	soundDictionary: {
 		light_rain_volume: {
@@ -103,16 +106,28 @@ const getters = {
 };
 
 const actions = {
-	async fetchMixes({ commit }) {
-		const response = await axios.get("https://illucid-backend.herokuapp.com/mixes");
+	async fetchMixes({ commit }, id) {
+		const response = await axios.get("http://localhost:3000/mixes", {
+			params: {
+				user_id: id,
+			},
+		});
 		commit("setMixes", response.data);
 	},
 	async addMix({ commit }, payload) {
-		const response = await axios.post("https://illucid-backend.herokuapp.com/mixes", payload);
+		var headers = {
+			headers: {
+				Accept: "application/json",
+				"Content-Type": "application/json;charset=UTF-8",
+			},
+		};
+		const response = await axios.post("http://localhost:3000/mixes", payload, headers);
 		commit("newMix", response.data);
 	},
 	async deleteMix({ commit }, id) {
-		await axios.get(`https://illucid-backend.herokuapp.com/mixes/${id}`);
+		console.log(id);
+		const body = { id: id };
+		await axios.delete(`http://localhost:3000/mixes`, { data: body });
 		commit("removeMix", id);
 	},
 };
@@ -120,7 +135,8 @@ const actions = {
 const mutations = {
 	setMixes: (state, mixes) => (state.mixes = mixes),
 	newMix: (state, mix) => state.mixes.unshift(mix),
-	removeMix: (state, id) => (state.mixes = state.mixes.filter((mix) => mix.id !== id)),
+	removeMix: (state, id) => (state.mixes = state.mixes.filter((mix) => mix._id !== id)),
+	setDate: (state) => (state.time = new Date().toLocaleString()),
 };
 
 export default {
