@@ -107,12 +107,10 @@ const getters = {
 
 const actions = {
 	async fetchMixes({ commit }, id) {
-		const response = await axios.get("http://localhost:3000/mixes", {
-			params: {
-				user_id: id,
-			},
-		});
-		commit("setMixes", response.data);
+		let response = await axios.get("http://localhost:3000/mixes");
+
+		response = response.data.filter(mix => mix.user_id === id)
+		commit("setMixes", response);
 	},
 	async addMix({ commit }, payload) {
 		var headers = {
@@ -125,7 +123,6 @@ const actions = {
 		commit("newMix", response.data);
 	},
 	async deleteMix({ commit }, id) {
-		console.log(id);
 		const body = { id: id };
 		await axios.delete(`http://localhost:3000/mixes`, { data: body });
 		commit("removeMix", id);
