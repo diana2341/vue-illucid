@@ -107,7 +107,7 @@ const getters = {
 
 const actions = {
 	async fetchMixes({ commit }, id) {
-		let response = await axios.get("http://localhost:3000/mixes");
+		let response = await axios.get("https://mongo-illucid.herokuapp.com/mixes");
 
 		response = response.data.filter(mix => mix.user_id === id)
 		commit("setMixes", response);
@@ -119,12 +119,12 @@ const actions = {
 				"Content-Type": "application/json;charset=UTF-8",
 			},
 		};
-		const response = await axios.post("http://localhost:3000/mixes", payload, headers);
+		const response = await axios.post("https://mongo-illucid.herokuapp.com/mixes", payload, headers);
 		commit("newMix", response.data);
 	},
 	async deleteMix({ commit }, id) {
 		const body = { id: id };
-		await axios.delete(`http://localhost:3000/mixes`, { data: body });
+		await axios.delete(`https://mongo-illucid.herokuapp.com/mixes`, { data: body });
 		commit("removeMix", id);
 	},
 };
