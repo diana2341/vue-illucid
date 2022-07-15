@@ -1,6 +1,4 @@
-import axios from "axios";
-axios.defaults.headers.common["Access-Control-Allow-Origin"] = "*";
-
+import {allMixes, newMix, removeMix } from '../../api/mixes'
 const state = {
 	time: "",
 
@@ -24,7 +22,7 @@ const state = {
 			audio: "fire-large-flame.mp3",
 		},
 		thunder_volume: {
-			name: "thunderCloud",
+			name: "heavy",
 
 			image: "thunder-cloud.png",
 			audio: "thunder.fade.ogg",
@@ -69,7 +67,7 @@ const state = {
 			audio: "river.mp3",
 		},
 		light_wind_volume: {
-			name: "simpleWind",
+			name: "lightWind",
 			image: "wind-simple.png",
 			audio: "rain-light-in-nature.mp3",
 		},
@@ -107,7 +105,7 @@ const getters = {
 
 const actions = {
 	async fetchMixes({ commit }, id) {
-		let response = await axios.get("https://mongo-illucid.herokuapp.com/mixes");
+		let response = await allMixes()
 
 		response = response.data.filter(mix => mix.user_id === id)
 		commit("setMixes", response);
@@ -119,12 +117,12 @@ const actions = {
 				"Content-Type": "application/json;charset=UTF-8",
 			},
 		};
-		const response = await axios.post("https://mongo-illucid.herokuapp.com/mixes", payload, headers);
+		const response = await newMix(payload, headers);
 		commit("newMix", response.data);
 	},
 	async deleteMix({ commit }, id) {
 		const body = { id: id };
-		await axios.delete(`https://mongo-illucid.herokuapp.com/mixes`, { data: body });
+		await removeMix(body)
 		commit("removeMix", id);
 	},
 };
