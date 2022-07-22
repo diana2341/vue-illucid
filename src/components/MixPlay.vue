@@ -65,7 +65,6 @@ export default {
     thingToWatch:{
       deep: true,
       handler(){
-        console.log('hello');
       }
     }
   },
@@ -101,7 +100,6 @@ export default {
       }
     },
     helper() {
-      console.log('it helped')
     }
   },
 };
