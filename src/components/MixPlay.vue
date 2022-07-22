@@ -37,10 +37,37 @@ export default {
   data() {
     return {
       open: false,
+      thingToWatch: {
+        deep1: "",
+        deep2: "",
+        deep3: ""
+      }
     };
   },
   props: {
     userId: {},
+  },
+  computed: {
+    // firstDeep(){
+    //   return this.thingToWatch.deep1
+    // },
+    // secondDeep(){
+    //   return this.thingToWatch.deep2
+    // }
+  },
+  watch: {
+    // firstDeep(){
+    //   this.helper()
+    // },
+    // secondDeep(){
+    //   this.helper()
+    // }
+    thingToWatch:{
+      deep: true,
+      handler(){
+        console.log('hello');
+      }
+    }
   },
   methods: {
     away() {
@@ -73,6 +100,9 @@ export default {
         this.$emit("presets", event, "night");
       }
     },
+    helper() {
+      console.log('it helped')
+    }
   },
 };
 </script>

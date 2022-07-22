@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-    <div class="bg" :class='{"night": bgNight, "rain": bgRain,"leaves":bgFall}' ref="bg"></div>
+    <div class="bg" :class='{"night": theme.bgNight, "rain": theme.bgRain,"leaves":theme.bgFall}' ref="bg"></div>
     <div v-if="userId === false">
       <PopupSignup @nameUpdate="nameUpdate" />
     </div>
@@ -31,6 +31,8 @@
         @backgroundUpdate="backgroundUpdate"
       />
     </div>
+    <span v-bind:class="{ show: show }" id="toast">{{ message }}</span>
+
   </div>
 </template>
 
@@ -51,11 +53,8 @@ export default {
     ...mapMutations(["setDate"]),
     matchKey(objectToSearch, keyToFind,audioControl) {
     for (let k in objectToSearch) {
-
         if ( k?.toLowerCase().indexOf(keyToFind?.toLowerCase()) !== -1) {
-
         if(audioControl?.name === keyToFind){
-console.log( objectToSearch[k],keyToFind)
          audioControl.value = parseFloat(objectToSearch[k])
           audioControl.previousElementSibling.volume =
             parseFloat(objectToSearch[k])
@@ -82,29 +81,43 @@ console.log( objectToSearch[k],keyToFind)
     backgroundUpdate(event, type){
        let bg = localStorage.getItem("illucidBackground");
       if(type){
+         window.clearTimeout(this.showTime);
         if (type === "fall") {
-          this.bgFall=true
-          this.bgRain=false
-          this.bgNight=false
+          this.theme.bgFall=true
+          this.theme.bgRain=false
+          this.theme.bgNight=false
+          this.show = false;
         } else if (type === "rain") {
-          this.bgFall=false
-          this.bgRain=true
-          this.bgNight=false
+          this.theme.bgFall=false
+          this.theme.bgRain=true
+          this.theme.bgNight=false
+          this.show = false;
         } else if (type === "night") {
-          this.bgFall=false
-          this.bgRain=false
-          this.bgNight=true
+          this.theme.bgFall=false
+          this.theme.bgRain=false
+          this.theme.bgNight=true
+          this.show=false
         }
       }else if(!type){
+        this.mounted=true
+        setTimeout(() => {
+              this.mounted=false
+        }, 1000); 
         if (bg === "fall") {
-          this.bgFall=true
+          this.theme.bgFall=true
         } else if (bg === "rain") {
-          this.bgRain=true
+          this.theme.bgRain=true
         } else if (bg === "night") {
-          this.bgNight=true
+          this.theme.bgNight=true
         }
       }
 
+    },
+    hide(){
+    this.showTime = setTimeout(() => {
+          this.message = "";
+          this.show = false;
+      }, 3200); 
     }
   },
   data() {
@@ -114,9 +127,15 @@ console.log( objectToSearch[k],keyToFind)
       name: "",
       id: "",
       dayTime: "",
-      bgFall:false,
-      bgRain:false,
-      bgNight:false
+      show:false,
+      message:'',
+      mounted:false,
+      showTime:null,
+      theme:{
+        bgFall:false,
+        bgRain:false,
+        bgNight:false,
+      }
     };
   },
   mounted() {
@@ -126,6 +145,7 @@ console.log( objectToSearch[k],keyToFind)
       delay: 100,
     });
     this.backgroundUpdate()
+    this.mounted=true
   },
 
   created() {
@@ -150,6 +170,17 @@ console.log( objectToSearch[k],keyToFind)
       this.dayTime = "Good evening";
     }
   },
+  computed:{
+    rainMode(){
+      return this.theme.bgRain
+    },
+    fallMode(){
+      return this.theme.bgFall
+    },
+    nightMode(){
+      return this.theme.bgNight
+    }
+  },
   watch: {
     name(name) {
       this.name = name;
@@ -157,8 +188,47 @@ console.log( objectToSearch[k],keyToFind)
     id(id) {
       this.id = id;
     },
+   
+    // mode change message
+    theme:{
+      deep: true,
+      handler(){
+      if(!this.mounted)
+      setTimeout(() => {
+      this.show=true
+      this.message='Your mode has been updated!'
+      }, 200); 
+     this.hide()
+    }
   },
-};
+  // Specific message for each mode changed
+  // rainMode(){
+  //   this.show=true
+  //   this.message='You are now in rain mode!!'
+  //   setTimeout(() => {
+  //       this.message = "";
+  //       this.show = false;
+  //     }, 3200);
+  // },
+  //  fallMode(){
+  //   this.show=true
+  //   this.message='You are now in fall mode!!'
+  //   setTimeout(() => {
+  //       this.message = "";
+  //       this.show = false;
+  //     }, 3200);
+  // },
+  //  nightMode(){
+  //   this.show=true
+  //   this.message='You are now in night mode!!'
+  //   setTimeout(() => {
+  //       this.message = "";
+  //       this.show = false;
+  //     }, 3200);
+  // }
+  
+}
+}
 </script>
 
 <style>
