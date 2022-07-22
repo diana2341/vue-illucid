@@ -9,7 +9,7 @@
     </audio>
     <input
       class="range"
-      :ref="sound.name"
+      ref="control"
       type="range"
       min="0"
       max="1"
@@ -59,16 +59,12 @@ export default {
   },
 };
 </script>
-<style scoped>
+<style >
 .sound-control img {
   width: 90px;
   height: auto;
   cursor: pointer;
-  /* background: white; */
-  /* filter: invert(85%) sepia(4%) saturate(958%) hue-rotate(141deg) brightness(101%) contrast(88%);
-	border: solid 1px;
-	padding: 17px;
-	border-radius: 50%; */
+
 }
 .sound-control {
   display: flex;
@@ -87,6 +83,7 @@ export default {
   border-radius: 15px;
   overflow: hidden;
   box-shadow: inset 0 0 5px #8fddf0;
+  z-index: 1;
 }
 .range::-webkit-slider-thumb {
   -webkit-appearance: none;

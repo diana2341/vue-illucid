@@ -1,5 +1,6 @@
 <template>
   <div id="app">
+    <div class="bg" :class='{"night": theme.bgNight, "rain": theme.bgRain,"leaves":theme.bgFall}' ref="bg"></div>
     <div v-if="userId === false">
       <PopupSignup @nameUpdate="nameUpdate" />
     </div>
@@ -27,8 +28,11 @@
         @playAudio="playAudio"
         :userId="id"
         :showUser="userId"
+        @backgroundUpdate="backgroundUpdate"
       />
     </div>
+    <span v-bind:class="{ show: show }" id="toast">{{ message }}</span>
+
   </div>
 </template>
 
@@ -47,81 +51,26 @@ export default {
 
   methods: {
     ...mapMutations(["setDate"]),
-    playAudio(event, mix) {
-      this.$refs.form.$children.map((child) => {
-        if (child.$refs.rain) {
-          child.$refs.rain.value = mix.light_rain_volume;
-          child.$refs.rain.previousElementSibling.volume =
-            mix.light_rain_volume;
-          child.$refs.rain.previousElementSibling.play();
-        } else if (child.$refs.bird) {
-          child.$refs.bird.value = mix.bird_volume;
-          child.$refs.bird.previousElementSibling.volume = mix.bird_volume;
-          child.$refs.bird.previousElementSibling.play();
-        } else if (child.$refs.regularFire) {
-          child.$refs.regularFire.value = mix.large_fire_volume;
-          child.$refs.regularFire.previousElementSibling.volume =
-            mix.large_fire_volume;
-          child.$refs.regularFire.previousElementSibling.play();
-        } else if (child.$refs.thunderCloud) {
-          child.$refs.thunderCloud.value = mix.heavy_rain_volume;
-          child.$refs.thunderCloud.previousElementSibling.volume =
-            mix.heavy_rain_volume;
-          child.$refs.thunderCloud.previousElementSibling.play();
-          //
-        } else if (child.$refs.wave) {
-          child.$refs.wave.value = mix.wave_volume;
-          child.$refs.wave.previousElementSibling.volume = mix.wave_volume;
-          child.$refs.wave.previousElementSibling.play();
-        } else if (child.$refs.strongWind) {
-          child.$refs.strongWind.value = mix.strong_wind_volume;
-          child.$refs.strongWind.previousElementSibling.volume =
-            mix.strong_wind_volume;
-          child.$refs.strongWind.previousElementSibling.play();
-        } else if (child.$refs.forest) {
-          child.$refs.forest.value = mix.forest_volume;
-          child.$refs.forest.previousElementSibling.volume = mix.forest_volume;
-          child.$refs.forest.previousElementSibling.play();
-        } else if (child.$refs.thunder) {
-          child.$refs.thunder.value = mix.thunder_volume;
-          child.$refs.thunder.previousElementSibling.volume =
-            mix.thunder_volume;
-          child.$refs.thunder.previousElementSibling.play();
-        } else if (child.$refs.fire) {
-          child.$refs.fire.value = mix.campfire_volume;
-          child.$refs.fire.previousElementSibling.volume = mix.campfire_volume;
-          child.$refs.fire.previousElementSibling.play();
-        } else if (child.$refs.riverWave) {
-          child.$refs.riverWave.value = mix.river_volume;
-          child.$refs.riverWave.previousElementSibling.volume =
-            mix.river_volume;
-          child.$refs.riverWave.previousElementSibling.play();
-        } else if (child.$refs.simpleWind) {
-          child.$refs.simpleWind.value = mix.light_wind_volume;
-          child.$refs.simpleWind.previousElementSibling.volume =
-            mix.light_wind_volume;
-          child.$refs.simpleWind.previousElementSibling.play();
-        } else if (child.$refs.cafe) {
-          child.$refs.cafe.value = mix.coffee_shop_volume;
-          child.$refs.cafe.previousElementSibling.volume =
-            mix.coffee_shop_volume;
-          child.$refs.cafe.previousElementSibling.play();
-        } else if (child.$refs.cat) {
-          child.$refs.cat.value = mix.cat_purring_volume;
-          child.$refs.cat.previousElementSibling.volume =
-            mix.cat_purring_volume;
-          child.$refs.cat.previousElementSibling.play();
-        } else if (child.$refs.night) {
-          child.$refs.night.value = mix.night_sound_volume;
-          child.$refs.night.previousElementSibling.volume =
-            mix.night_sound_volume;
-          child.$refs.night.previousElementSibling.play();
-        } else if (child.$refs.chimes) {
-          child.$refs.chimes.value = mix.wind_chime_volume;
-          child.$refs.chimes.previousElementSibling.volume =
-            mix.wind_chime_volume;
-          child.$refs.chimes.previousElementSibling.play();
+    matchKey(objectToSearch, keyToFind,audioControl) {
+    for (let k in objectToSearch) {
+        if ( k?.toLowerCase().indexOf(keyToFind?.toLowerCase()) !== -1) {
+        if(audioControl?.name === keyToFind){
+         audioControl.value = parseFloat(objectToSearch[k])
+          audioControl.previousElementSibling.volume =
+            parseFloat(objectToSearch[k])
+          audioControl.previousElementSibling.play();
+        }     
         }
+    }
+   return  null
+},
+
+    playAudio(event, mix) {
+      delete mix["_id"];
+      delete mix["user_id"];
+      this.$refs.form.$children.map((child) => {
+      this.matchKey(mix,child.$refs.control?.name,child.$refs.control)
+
       });
     },
     nameUpdate(e, name, id, show) {
@@ -129,6 +78,47 @@ export default {
       this.id = id;
       this.userId = show;
     },
+    backgroundUpdate(event, type){
+       let bg = localStorage.getItem("illucidBackground");
+      if(type){
+         window.clearTimeout(this.showTime);
+        if (type === "fall") {
+          this.theme.bgFall=true
+          this.theme.bgRain=false
+          this.theme.bgNight=false
+          this.show = false;
+        } else if (type === "rain") {
+          this.theme.bgFall=false
+          this.theme.bgRain=true
+          this.theme.bgNight=false
+          this.show = false;
+        } else if (type === "night") {
+          this.theme.bgFall=false
+          this.theme.bgRain=false
+          this.theme.bgNight=true
+          this.show=false
+        }
+      }else if(!type){
+        this.mounted=true
+        setTimeout(() => {
+              this.mounted=false
+        }, 1000); 
+        if (bg === "fall") {
+          this.theme.bgFall=true
+        } else if (bg === "rain") {
+          this.theme.bgRain=true
+        } else if (bg === "night") {
+          this.theme.bgNight=true
+        }
+      }
+
+    },
+    hide(){
+    this.showTime = setTimeout(() => {
+          this.message = "";
+          this.show = false;
+      }, 3200); 
+    }
   },
   data() {
     return {
@@ -137,6 +127,15 @@ export default {
       name: "",
       id: "",
       dayTime: "",
+      show:false,
+      message:'',
+      mounted:false,
+      showTime:null,
+      theme:{
+        bgFall:false,
+        bgRain:false,
+        bgNight:false,
+      }
     };
   },
   mounted() {
@@ -145,13 +144,13 @@ export default {
       once: true,
       delay: 100,
     });
+    this.backgroundUpdate()
+    this.mounted=true
   },
 
   created() {
     let id = localStorage.getItem("illucidId");
     let name = localStorage.getItem("illucidName");
-    let bg = localStorage.getItem("illucidBackground");
-
     if (id && name.length) {
       this.userId = true;
       this.userName = name;
@@ -159,22 +158,7 @@ export default {
     } else {
       this.userId = false;
     }
-    if (bg === "fall") {
-      document.body.style.backgroundImage = ` linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),url(${require("@/assets/darkLeaves.svg")})`;
-      document.body.style.backgroundRepeat = "initial";
-      document.body.style.backgroundSize = "initial";
-      document.body.style.backgroundPosition = "initial";
-    } else if (bg === "rain") {
-      document.body.style.backgroundImage = ` linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),url(${require("@/assets/rain.svg")})`;
-      document.body.style.backgroundRepeat = "initial";
-      document.body.style.backgroundSize = "initial";
-      document.body.style.backgroundPosition = "initial";
-    } else if (bg === "night") {
-      document.body.style.backgroundImage = ` linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),url(${require("@/assets/night.svg")})`;
-      document.body.style.backgroundRepeat = "no-repeat";
-      document.body.style.backgroundSize = "cover";
-      document.body.style.backgroundPosition = "center center";
-    }
+   
     const today = new Date();
     const curHr = today.getHours();
 
@@ -186,6 +170,17 @@ export default {
       this.dayTime = "Good evening";
     }
   },
+  computed:{
+    rainMode(){
+      return this.theme.bgRain
+    },
+    fallMode(){
+      return this.theme.bgFall
+    },
+    nightMode(){
+      return this.theme.bgNight
+    }
+  },
   watch: {
     name(name) {
       this.name = name;
@@ -193,17 +188,90 @@ export default {
     id(id) {
       this.id = id;
     },
+   
+    // mode change message
+    theme:{
+      deep: true,
+      handler(){
+      if(!this.mounted)
+      setTimeout(() => {
+      this.show=true
+      this.message='Your mode has been updated!'
+      }, 200); 
+     this.hide()
+    }
   },
-};
+  // Specific message for each mode changed
+  // rainMode(){
+  //   this.show=true
+  //   this.message='You are now in rain mode!!'
+  //   setTimeout(() => {
+  //       this.message = "";
+  //       this.show = false;
+  //     }, 3200);
+  // },
+  //  fallMode(){
+  //   this.show=true
+  //   this.message='You are now in fall mode!!'
+  //   setTimeout(() => {
+  //       this.message = "";
+  //       this.show = false;
+  //     }, 3200);
+  // },
+  //  nightMode(){
+  //   this.show=true
+  //   this.message='You are now in night mode!!'
+  //   setTimeout(() => {
+  //       this.message = "";
+  //       this.show = false;
+  //     }, 3200);
+  // }
+  
+}
+}
 </script>
 
 <style>
-body {
+html, body {
+    margin: 0;
+    padding: 0;
+    border: 0;
+}
+.bg{
+  position: fixed; /*position: fixed;*/
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),
+  url("~@/assets/night.svg");
+  background-size: cover;
+  background-position: center center;
+  background-repeat: no-repeat;
+}
+.bg.night{
   background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),
     url("~@/assets/night.svg");
   background-size: cover;
   background-position: center center;
   background-repeat: no-repeat;
+
+}
+.bg.rain{
+  background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),
+    url("~@/assets/rain.svg");
+  background-size: initial;
+  background-position: initial;
+  background-repeat: initial;
+
+}
+.bg.leaves{
+  background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),
+    url("~@/assets/darkLeaves.svg");
+  background-size: initial;
+  background-position: initial;
+  background-repeat: initial;
+
 }
 .name {
   text-transform: capitalize;

@@ -29,7 +29,7 @@ export default {
   },
 };
 </script>
-<style scoped>
+<style >
 .mix {
   cursor: pointer;
   margin-bottom: 10px;
@@ -38,6 +38,8 @@ export default {
   align-items: center;
   gap: 5px;
   line-height: 1;
+  white-space: nowrap;
+
 }
 .mix:first-child {
   margin-top: 10px;
