@@ -81,7 +81,7 @@ export default {
       if (event) {
         if (event.type === "change") {
           event.currentTarget.previousElementSibling.volume =
-            event.target.value;
+          event.target.value;
         }
       }
     },

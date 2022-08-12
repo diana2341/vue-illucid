@@ -146,7 +146,6 @@ export default {
   border-radius: 10px;
   top: 31px;
   /* z-index: -1; */
-  right: 3px;
 }
 .cheveron {
   width: 15px;

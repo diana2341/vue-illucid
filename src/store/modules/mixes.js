@@ -3,6 +3,11 @@ const state = {
 	time: "",
 
 	mixes: [],
+	theme:{
+		bgFall:false,
+		bgRain:false,
+		bgNight:false,
+	},
 	soundDictionary: {
 		light_rain_volume: {
 			name: "rain",
@@ -101,6 +106,7 @@ const state = {
 const getters = {
 	allMixes: (state) => state.mixes,
 	soundDictionary: (state) => state.soundDictionary,
+	theme:(state) => state.theme
 };
 
 const actions = {
