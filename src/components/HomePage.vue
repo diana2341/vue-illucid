@@ -24,9 +24,6 @@
         >!
       </div>
     </div>
-     <router-link class="nav-link" to="/profile">
-     Profile~~!!!
-    </router-link>
     <div class="container">
       <MixForm
         ref="form"
