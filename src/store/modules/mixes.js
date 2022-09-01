@@ -1,10 +1,13 @@
-import axios from "axios";
-axios.defaults.headers.common["Access-Control-Allow-Origin"] = "*";
-
+import {allMixes, newMix, removeMix } from '../../api/mixes'
 const state = {
 	time: "",
 
 	mixes: [],
+	theme:{
+		bgFall:false,
+		bgRain:false,
+		bgNight:false,
+	},
 	soundDictionary: {
 		light_rain_volume: {
 			name: "rain",
@@ -24,7 +27,7 @@ const state = {
 			audio: "fire-large-flame.mp3",
 		},
 		thunder_volume: {
-			name: "thunderCloud",
+			name: "heavy",
 
 			image: "thunder-cloud.png",
 			audio: "thunder.fade.ogg",
@@ -69,7 +72,7 @@ const state = {
 			audio: "river.mp3",
 		},
 		light_wind_volume: {
-			name: "simpleWind",
+			name: "lightWind",
 			image: "wind-simple.png",
 			audio: "rain-light-in-nature.mp3",
 		},
@@ -103,11 +106,12 @@ const state = {
 const getters = {
 	allMixes: (state) => state.mixes,
 	soundDictionary: (state) => state.soundDictionary,
+	theme:(state) => state.theme
 };
 
 const actions = {
 	async fetchMixes({ commit }, id) {
-		let response = await axios.get("http://localhost:3000/mixes");
+		let response = await allMixes()
 
 		response = response.data.filter(mix => mix.user_id === id)
 		commit("setMixes", response);
@@ -119,12 +123,12 @@ const actions = {
 				"Content-Type": "application/json;charset=UTF-8",
 			},
 		};
-		const response = await axios.post("http://localhost:3000/mixes", payload, headers);
+		const response = await newMix(payload, headers);
 		commit("newMix", response.data);
 	},
 	async deleteMix({ commit }, id) {
 		const body = { id: id };
-		await axios.delete(`http://localhost:3000/mixes`, { data: body });
+		await removeMix(body)
 		commit("removeMix", id);
 	},
 };

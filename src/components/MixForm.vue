@@ -24,7 +24,7 @@
         </div>
       </div>
     </div>
-    <MixPlay @playAudio="playAudio" @presets="presets" :userId="userId" />
+    <MixPlay @playAudio="playAudio" @presets="presets" :userId="userId" @backgroundUpdate="backgroundUpdate"/>
     <span v-bind:class="{ show: show }" id="toast">{{ message }}</span>
     <div class="sound-container">
       <div v-for="sound in soundDictionary" :key="sound.id">
@@ -51,21 +51,6 @@ export default {
   data() {
     return {
       mixName: "",
-      lightRainVolume: 0,
-      heavyRainVolume: 0,
-      largeFireVolume: 0,
-      campfireVolume: 0,
-      forestVolume: 0,
-      riverVolume: 0,
-      strongWindVolume: 0,
-      lightWindVolume: 0,
-      thunderVolume: 0,
-      waveVolume: 0,
-      coffeeShopVolume: 0,
-      birdVolume: 0,
-      catPurringVolume: 0,
-      nightSoundVolume: 0,
-      windChimeVolume: 0,
       message: "",
       show: false,
     };
@@ -78,57 +63,26 @@ export default {
     playAudio(event, mix) {
       this.$emit("playAudio", event, mix);
     },
-    updateVolume(event, name, volume) {
+    backgroundUpdate(event, type) {
+      this.$emit("backgroundUpdate", event, type);
+    },
+    checkVolume( name){
+    let mapped = this.$refs.controls.map((control) => {
+        if (control.$refs.control.name === name) {
+          if(control.$refs.control.value){
+            return control.$refs.control.value
+          }
+        }
+      });
+      return mapped.filter(el=>el!==undefined)[0]
+    },
+
+    updateVolume(event) {
       if (event) {
         if (event.type === "change") {
           event.currentTarget.previousElementSibling.volume =
-            event.target.value;
+          event.target.value;
         }
-      }
-
-      if (name === "rain") {
-        this.lightRainVolume =
-          volume || volume === 0 ? volume : event.target.value;
-      } else if (name === "bird") {
-        this.birdVolume = volume || volume === 0 ? volume : event.target.value;
-      } else if (name === "regularFire") {
-        this.largeFireVolume =
-          volume || volume === 0 ? volume : event.target.value;
-      } else if (name === "thunderCloud") {
-        this.heavyRainVolume =
-          volume || volume === 0 ? volume : event.target.value;
-        //
-      } else if (name === "wave") {
-        this.waveVolume = volume || volume === 0 ? volume : event.target.value;
-      } else if (name === "strongWind") {
-        this.strongWindVolume =
-          volume || volume === 0 ? volume : event.target.value;
-      } else if (name === "forest") {
-        this.forestVolume =
-          volume || volume === 0 ? volume : event.target.value;
-      } else if (name === "thunder") {
-        this.thunderVolume =
-          volume || volume === 0 ? volume : event.target.value;
-      } else if (name === "fire") {
-        this.campfireVolume =
-          volume || volume === 0 ? volume : event.target.value;
-      } else if (name === "riverWave") {
-        this.riverVolume = volume || volume === 0 ? volume : event.target.value;
-      } else if (name === "simpleWind") {
-        this.lightWindVolume =
-          volume || volume === 0 ? volume : event.target.value;
-      } else if (name === "cafe") {
-        this.coffeeShopVolume =
-          volume || volume === 0 ? volume : event.target.value;
-      } else if (name === "cat") {
-        this.catPurringVolume =
-          volume || volume === 0 ? volume : event.target.value;
-      } else if (name === "night") {
-        this.nightSoundVolume =
-          volume || volume === 0 ? volume : event.target.value;
-      } else if (name === "chimes") {
-        this.windChimeVolume =
-          volume || volume === 0 ? volume : event.target.value;
       }
     },
 
@@ -137,24 +91,8 @@ export default {
       e.preventDefault();
       let id = localStorage.getItem("illucidId");
       let userId = id ? id : this.userId;
-      if (
-        this.mixName === "" ||
-        (parseFloat(this.lightRainVolume) === 0 &&
-          parseFloat(this.heavyRainVolume) === 0 &&
-          parseFloat(this.largeFireVolume) === 0 &&
-          parseFloat(this.campfireVolume) === 0 &&
-          parseFloat(this.forestVolume) === 0 &&
-          parseFloat(this.riverVolume) === 0 &&
-          parseFloat(this.strongWindVolume) === 0 &&
-          parseFloat(this.lightWindVolume) === 0 &&
-          parseFloat(this.thunderVolume) === 0 &&
-          parseFloat(this.waveVolume) === 0 &&
-          parseFloat(this.birdVolume) === 0 &&
-          parseFloat(this.coffeeShopVolume) === 0 &&
-          parseFloat(this.catPurringVolume) === 0 &&
-          parseFloat(this.nightSoundVolume) === 0 &&
-          parseFloat(this.windChimeVolume) === 0)
-      ) {
+      let empty = this.$refs.controls.every((control) => parseFloat(control.$refs.audio.nextElementSibling.value) === 0)
+      if (this.mixName === "" ||empty) {
         this.show = true;
         this.message =
           "Please make you have a sure mix name and at least one sound has volume!";
@@ -166,21 +104,21 @@ export default {
         let data = {
           mix_name: this.mixName,
           user_id: userId,
-          light_rain_volume: this.lightRainVolume,
-          heavy_rain_volume: this.heavyRainVolume,
-          large_fire_volume: this.largeFireVolume,
-          campfire_volume: this.campfireVolume,
-          forest_volume: this.forestVolume,
-          river_volume: this.riverVolume,
-          strong_wind_volume: this.strongWindVolume,
-          light_wind_volume: this.lightWindVolume,
-          thunder_volume: this.thunderVolume,
-          wave_volume: this.waveVolume,
-          coffee_shop_volume: this.coffeeShopVolume,
-          bird_volume: this.birdVolume,
-          cat_purring_volume: this.catPurringVolume,
-          night_sound_volume: this.nightSoundVolume,
-          wind_chime_volume: this.windChimeVolume,
+          light_rain_volume: this.checkVolume('rain'),
+          heavy_rain_volume: this.checkVolume('heavy'),
+          large_fire_volume: this.checkVolume('regulatFire'),
+          campfire_volume: this.checkVolume('fire'),
+          forest_volume: this.checkVolume('forest'),
+          river_volume: this.checkVolume('riverWave'),
+          strong_wind_volume: this.checkVolume('strongWind'),
+          light_wind_volume: this.checkVolume('lightWind'),
+          thunder_volume: this.checkVolume('thunder'),
+          wave_volume: this.checkVolume('wave'),
+          coffee_shop_volume: this.checkVolume('cafe'),
+          bird_volume: this.checkVolume('bird'),
+          cat_purring_volume: this.checkVolume('cat'),
+          night_sound_volume: this.checkVolume('night'),
+          wind_chime_volume: this.checkVolume('chimes'),
         };
         this.addMix(data);
         this.mixName = "";
@@ -211,66 +149,31 @@ export default {
       });
       this.pauseAll();
     },
+    updatePreset(name,volume){
+      this.$refs.controls.map((control) => {
+          if (control.$refs.control.name  === name) {
+            control.$refs.control.value = volume;
+            control.$refs.control.previousElementSibling.volume = volume;
+          }
+        });
+
+    },
     presets(event, name) {
       this.resetAll();
-
       if (name === "rain") {
-        this.thunderVolume = 0.36;
-        this.windChimeVolume = 0.06;
-        this.heavyRainVolume = 0.12;
-        this.$refs.controls.map((control) => {
-          if (control.$refs.thunder) {
-            control.$refs.thunder.value = "0.36";
-            control.$refs.thunder.previousElementSibling.volume = "0.36";
-          }
-          if (control.$refs.chimes) {
-            control.$refs.chimes.value = "0.06";
-
-            control.$refs.chimes.previousElementSibling.volume = "0.06";
-          }
-          if (control.$refs.thunderCloud) {
-            control.$refs.thunderCloud.value = "0.12";
-            control.$refs.thunderCloud.previousElementSibling.volume = "0.12";
-          }
-        });
+        this.updatePreset("thunder","0.36")
+        this.updatePreset("chimes","0.06")
+        this.updatePreset("heavy","0.12")
         this.playAll();
       } else if (name === "fall") {
-        this.birdVolume = 0.16;
-        this.riverVolume = 0.13;
-        this.largeFireVolume = 0.2;
-        this.$refs.controls.map((control) => {
-          if (control.$refs.bird) {
-            control.$refs.bird.value = "0.16";
-            control.$refs.bird.previousElementSibling.volume = "0.16";
-          }
-          if (control.$refs.riverWave) {
-            control.$refs.riverWave.value = "0.06";
-            control.$refs.riverWave.previousElementSibling.volume = "0.06";
-          }
-          if (control.$refs.regularFire) {
-            control.$refs.regularFire.value = "0.2";
-            control.$refs.regularFire.previousElementSibling.volume = "0.2";
-          }
-        });
+        this.updatePreset("bird","0.16")
+        this.updatePreset("riverWave","0.06")
+        this.updatePreset("regularFire","0.2")
         this.playAll();
       } else if (name === "night") {
-        this.nightSoundVolume = 0.15;
-        this.windChimeVolume = 0.24;
-        this.lightWindVolume = 0.13;
-        this.$refs.controls.map((control) => {
-          if (control.$refs.night) {
-            control.$refs.night.value = "0.15";
-            control.$refs.night.previousElementSibling.volume = "0.15";
-          }
-          if (control.$refs.chimes) {
-            control.$refs.chimes.value = "0.24";
-            control.$refs.chimes.previousElementSibling.volume = "0.24";
-          }
-          if (control.$refs.simpleWind) {
-            control.$refs.simpleWind.value = "0.13";
-            control.$refs.simpleWind.previousElementSibling.volume = "0.13";
-          }
-        });
+        this.updatePreset("night","0.15")
+        this.updatePreset("chimes","0.24")
+        this.updatePreset("lightWind","0.13")
         this.playAll();
       }
     },
@@ -322,7 +225,7 @@ export default {
   },
 };
 </script>
-<style scoped>
+<style >
 .sound-container {
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
@@ -330,7 +233,6 @@ export default {
 #toast {
   visibility: hidden;
   min-width: 250px;
-  /* margin-left: -200px; */
   background-color: #bbd6db;
   box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
   color: #186aad;
@@ -339,7 +241,6 @@ export default {
   padding: 12px;
   position: fixed;
   z-index: 1;
-  /* left: 50%; */
   bottom: 30px;
   font-size: 24px;
   font-family: "Dongle";
@@ -428,13 +329,11 @@ form {
   margin: 0 auto;
 }
 input[type="submit"] {
-  /* position: absolute; */
   background: #bbd6db;
   color: #196aad;
   border: none;
   padding: 10px;
   border-radius: 45px;
-  /* right: 21em; */
   min-height: 47px;
   top: 0;
   min-width: 80px;
@@ -462,7 +361,5 @@ input[type="submit"] {
   padding-bottom: 22px;
   margin-top: 1em;
 }
-img {
-  /* filter: invert(100%); */
-}
+
 </style>

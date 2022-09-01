@@ -37,10 +37,36 @@ export default {
   data() {
     return {
       open: false,
+      thingToWatch: {
+        deep1: "",
+        deep2: "",
+        deep3: ""
+      }
     };
   },
   props: {
     userId: {},
+  },
+  computed: {
+    // firstDeep(){
+    //   return this.thingToWatch.deep1
+    // },
+    // secondDeep(){
+    //   return this.thingToWatch.deep2
+    // }
+  },
+  watch: {
+    // firstDeep(){
+    //   this.helper()
+    // },
+    // secondDeep(){
+    //   this.helper()
+    // }
+    thingToWatch:{
+      deep: true,
+      handler(){
+      }
+    }
   },
   methods: {
     away() {
@@ -49,40 +75,36 @@ export default {
     playAudio(event, mix) {
       this.$emit("playAudio", event, mix);
     },
+    backgroundUpdate(event, mix) {
+      this.$emit("backgroundUpdate", event, mix);
+    },
     openMixes() {
       this.open = !this.open;
     },
     randomMixer(event, type) {
       if (type === "fall") {
-        document.body.style.backgroundImage = ` linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),url(${require("@/assets/darkLeaves.svg")})`;
-        document.body.style.backgroundRepeat = "initial";
-        document.body.style.backgroundSize = "initial";
-        document.body.style.backgroundPosition = "initial";
+       this.$emit("backgroundUpdate", event, "fall");
         localStorage.setItem("illucidBackground", "fall");
 
         this.$emit("presets", event, "fall");
       } else if (type === "rain") {
-        document.body.style.backgroundImage = ` linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),url(${require("@/assets/rain.svg")})`;
-        document.body.style.backgroundRepeat = "initial";
-        document.body.style.backgroundSize = "initial";
-        document.body.style.backgroundPosition = "initial";
+        this.$emit("backgroundUpdate", event, "rain");
         localStorage.setItem("illucidBackground", "rain");
 
         this.$emit("presets", event, "rain");
       } else if (type === "night") {
         localStorage.setItem("illucidBackground", "night");
 
-        document.body.style.backgroundImage = ` linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),url(${require("@/assets/night.svg")})`;
-        document.body.style.backgroundRepeat = "no-repeat";
-        document.body.style.backgroundSize = "cover";
-        document.body.style.backgroundPosition = "center center";
+       this.$emit("backgroundUpdate", event, "night");
         this.$emit("presets", event, "night");
       }
     },
+    helper() {
+    }
   },
 };
 </script>
-<style scoped>
+<style >
 .random-options {
   display: flex;
   flex-direction: row;
@@ -103,6 +125,7 @@ export default {
   font-size: 22px;
   padding-bottom: 3px;
   min-width: 80px;
+  z-index: 1;
 }
 .creation_conatiner {
   position: relative;
@@ -123,7 +146,6 @@ export default {
   border-radius: 10px;
   top: 31px;
   /* z-index: -1; */
-  right: 3px;
 }
 .cheveron {
   width: 15px;
