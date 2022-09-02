@@ -1,11 +1,10 @@
 import Vuex from "vuex";
 import mixes from "./modules/mixes";
-import Vue from "vue";
 
 // Load Vuex
-Vue.use(Vuex);
+// Vue.use(Vuex);
 
-export default new Vuex.Store({
+export default Vuex.createStore({
 	modules: {
 		mixes,
 	},

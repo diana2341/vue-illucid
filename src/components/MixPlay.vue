@@ -16,7 +16,7 @@
         <MixCreations
           @playAudio="playAudio"
           :userId="userId"
-          v-on-clickaway="away"
+          v-click-away="away"
         />
       </div>
     </div>
@@ -24,12 +24,12 @@
 </template>
 <script>
 import MixCreations from "./MixCreations.vue";
-import { directive as onClickaway } from "vue-clickaway";
+import { directive } from "vue3-click-away";
 
 export default {
   name: "MixPlay",
   directives: {
-    onClickaway: onClickaway,
+    onClickaway: directive,
   },
   components: {
     MixCreations,
