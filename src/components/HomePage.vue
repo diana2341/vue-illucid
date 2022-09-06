@@ -1,37 +1,25 @@
 <template>
   <div id="app">
 
-    <div class="bg" :class='{"night": theme.bgNight, "rain": theme.bgRain,"leaves":theme.bgFall}' ref="bg"></div>
+    <div class="bg" :class='{ "night": theme.bgNight, "rain": theme.bgRain, "leaves": theme.bgFall }' ref="bg"></div>
     <div v-if="userId === false">
       <PopupSignup @nameUpdate="nameUpdate" />
     </div>
-   
-    <div
-      class="welcome_user"
-      :class="{ show: userName.length > 1 || name.length > 1 }"
-      v-if="userId"
-    >
+
+    <div class="welcome_user" :class="{ show: userName.length > 1 || name.length > 1 }" v-if="userId">
       <div data-aos="flip-up" data-aos-delay="600">
         {{ dayTime }}
-        <span class="name">{{ userName.length > 1 ? userName : name }}</span
-        >!
+        <span class="name">{{ userName.length > 1 ? userName : name }}</span>!
       </div>
     </div>
     <div class="welcome_user" style="opacity: 0" v-if="!userId">
       <div data-aos="flip-up" data-aos-delay="600">
         {{ dayTime }}
-        <span class="name">{{ userName.length > 1 ? userName : name }}</span
-        >!
+        <span class="name">{{ userName.length > 1 ? userName : name }}</span>!
       </div>
     </div>
     <div class="container">
-      <MixForm
-        ref="form"
-        @playAudio="playAudio"
-        :userId="id"
-        :showUser="userId"
-        @backgroundUpdate="backgroundUpdate"
-      />
+      <MixForm ref="form" @playAudio="playAudio" :userId="id" :showUser="userId" @backgroundUpdate="backgroundUpdate" />
     </div>
     <span v-bind:class="{ show: show }" id="toast">{{ message }}</span>
 
@@ -39,220 +27,375 @@
 </template>
 
 <script>
-import { mapMutations, mapGetters } from "vuex";
+import { useStore } from "vuex";
 import MixForm from "./MixForm.vue";
 import PopupSignup from "./PopupSignup.vue";
+import { onMounted, onCreated } from 'vue'
+import { ref } from 'vue'
 import AOS from "aos";
 import "aos/dist/aos.css";
+import { computed } from 'vue';
 export default {
   name: "HomePage",
   components: {
     MixForm,
     PopupSignup,
   },
+  setup() {
 
-  methods: {
-    ...mapMutations(["setDate"]),
-    matchKey(objectToSearch, keyToFind,audioControl) {
-    for (let k in objectToSearch) {
-        if ( k?.toLowerCase().indexOf(keyToFind?.toLowerCase()) !== -1) {
-        if(audioControl?.name === keyToFind){
-         audioControl.value = parseFloat(objectToSearch[k])
-          audioControl.previousElementSibling.volume =
-            parseFloat(objectToSearch[k])
-          audioControl.previousElementSibling.play();
-        }     
-        }
+    // data() {
+    //     return {
+    //       userId: false,
+    //       userName: "",
+    //       name: "",
+    //       id: "",
+    //       dayTime: "",
+    //       show:false,
+    //       message:'',
+    //       mounted:false,
+    //       showTime:null,
+
+    //     };
+    //   },
+    const userId = ref(false)
+    const userName = ref("")
+    const name = ref("")
+    const id = ref("")
+    const dayTime = ref("")
+    const show = ref(false)
+    const message = ref("")
+    const mounted = ref(false)
+    const showTime = ref(null)
+
+
+    const store = useStore()
+    const theme = store.theme
+
+    const setDate = () => {
+      store.commit('setDate')
     }
-   return  null
-},
+    const matchKey = (objectToSearch, keyToFind, audioControl) => {
+      for (let k in objectToSearch) {
+        if (k?.toLowerCase().indexOf(keyToFind?.toLowerCase()) !== -1) {
+          if (audioControl?.name === keyToFind) {
+            audioControl.value = parseFloat(objectToSearch[k])
+            audioControl.previousElementSibling.volume =
+              parseFloat(objectToSearch[k])
+            audioControl.previousElementSibling.play();
+          }
+        }
+      }
+      return null
+    }
 
-    playAudio(event, mix) {
+    const playAudio = (event, mix) => {
       delete mix["_id"];
       delete mix["user_id"];
       this.$refs.form.$children.map((child) => {
-      this.matchKey(mix,child.$refs.control?.name,child.$refs.control)
+        matchKey(mix, child.$refs.control?.name, child.$refs.control)
 
       });
-    },
-    nameUpdate(e, name, id, show) {
-      this.name = name;
-      this.id = id;
-      this.userId = show;
-    },
-    backgroundUpdate(event, type){
-       let bg = localStorage.getItem("illucidBackground");
-      if(type){
-         window.clearTimeout(this.showTime);
+    }
+    const nameUpdate = (e, newName, newId, show) => {
+      name.value = newName;
+      id.value = newId;
+      userId.value = show;
+    }
+    const backgroundUpdate = (event, type) => {
+      let bg = localStorage.getItem("illucidBackground");
+      if (type) {
+        window.clearTimeout(this.showTime);
         if (type === "fall") {
-          this.theme.bgFall=true
-          this.theme.bgRain=false
-          this.theme.bgNight=false
-          this.show = false;
+          theme.bgFall = true
+          theme.bgRain = false
+          theme.bgNight = false
+          show.value = false;
         } else if (type === "rain") {
-          this.theme.bgFall=false
-          this.theme.bgRain=true
-          this.theme.bgNight=false
-          this.show = false;
+          theme.bgFall = false
+          theme.bgRain = true
+          theme.bgNight = false
+          show.value = false;
         } else if (type === "night") {
-          this.theme.bgFall=false
-          this.theme.bgRain=false
-          this.theme.bgNight=true
-          this.show=false
+          theme.bgFall = false
+          theme.bgRain = false
+          theme.bgNight = true
+          show.value = false
         }
-      }else if(!type){
-        this.mounted=true
+      } else if (!type) {
+        mounted.value = true
         setTimeout(() => {
-              this.mounted=false
-        }, 1000); 
+          mounted.value = false
+        }, 1000);
         if (bg === "fall") {
-          this.theme.bgFall=true
+          theme.bgFall = true
         } else if (bg === "rain") {
-          this.theme.bgRain=true
+          theme.bgRain = true
         } else if (bg === "night") {
-          this.theme.bgNight=true
+          theme.bgNight = true
         }
       }
 
-    },
-    hide(){
-    this.showTime = setTimeout(() => {
-          this.message = "";
-          this.show = false;
-      }, 3200); 
     }
-  },
-  data() {
+    const hide = () => {
+      showTime.value = setTimeout(() => {
+        message.value = "";
+        show.value = false;
+      }, 3200);
+    }
+
+    onMounted(() => {
+      store.commit("setDate");
+      AOS.init({
+        once: true,
+        delay: 100,
+      });
+      backgroundUpdate()
+      mounted.value = true
+    })
+
+    onCreated(() => {
+      let id = localStorage.getItem("illucidId");
+      let name = localStorage.getItem("illucidName");
+      if (id && name.length) {
+        userId.value = true;
+        userName.value = name;
+        id.value = id;
+      } else {
+        userId.value = false;
+      }
+
+      const today = new Date();
+      const curHr = today.getHours();
+
+      if (curHr < 12) {
+        dayTime.value = "Good morning";
+      } else if (curHr < 18) {
+        dayTime.value = "Good afternoon";
+      } else {
+        dayTime.value = "Good evening";
+      }
+    })
+    const rainMode = computed(() => theme.bgRain)
+    const fallMode = computed(() => theme.bgFall)
+    const nightMode = computed(() => theme.bgNight)
+
+
+    //   computed:{
+    //     ...mapGetters(["theme"]),
+    //     rainMode(){
+    //       return this.$store.state.theme.bgRain
+    //     },
+    //     fallMode(){
+    //       return this.$store.state.theme.bgFall
+    //     },
+    //     nightMode(){
+    //       return this.$store.state.theme.bgNight
+    //     }
+    //   },
+    //   watch: {
+    //     name(name) {
+    //       this.name = name;
+    //     },
+    //     id(id) {
+    //       this.id = id;
+    //     },
+
+    //     theme:{
+    //       deep: true,
+    //       handler(){
+    //       if(!this.mounted)
+    //       setTimeout(() => {
+    //       this.show=true
+    //       this.message='Your mode has been updated!'
+    //       }, 200);
+    //      this.hide()
+    //     }
+    //   },
     return {
-      userId: false,
-      userName: "",
-      name: "",
-      id: "",
-      dayTime: "",
-      show:false,
-      message:'',
-      mounted:false,
-      showTime:null,
-     
-    };
-  },
-  mounted() {
-    this.$store.commit("setDate");
-    AOS.init({
-      once: true,
-      delay: 100,
-    });
-    this.backgroundUpdate()
-    this.mounted=true
-  },
+      setDate, matchKey, playAudio, nameUpdate, backgroundUpdate, hide, rainMode, fallMode, nightMode, userId, id, userName, name, dayTime, show, showTime, message, mounted, theme
+    }
+  }
 
-  created() {
-    let id = localStorage.getItem("illucidId");
-    let name = localStorage.getItem("illucidName");
-    if (id && name.length) {
-      this.userId = true;
-      this.userName = name;
-      this.id = id;
-    } else {
-      this.userId = false;
-    }
-   
-    const today = new Date();
-    const curHr = today.getHours();
+  //   methods: {
+  //     ...mapMutations(["setDate"]),
+  //     matchKey(objectToSearch, keyToFind,audioControl) {
+  //     for (let k in objectToSearch) {
+  //         if ( k?.toLowerCase().indexOf(keyToFind?.toLowerCase()) !== -1) {
+  //         if(audioControl?.name === keyToFind){
+  //          audioControl.value = parseFloat(objectToSearch[k])
+  //           audioControl.previousElementSibling.volume =
+  //             parseFloat(objectToSearch[k])
+  //           audioControl.previousElementSibling.play();
+  //         }     
+  //         }
+  //     }
+  //    return  null
+  // },
 
-    if (curHr < 12) {
-      this.dayTime = "Good morning";
-    } else if (curHr < 18) {
-      this.dayTime = "Good afternoon";
-    } else {
-      this.dayTime = "Good evening";
-    }
-  },
-  computed:{
-    ...mapGetters(["theme"]),
-    rainMode(){
-      return this.$store.state.theme.bgRain
-    },
-    fallMode(){
-      return this.$store.state.theme.bgFall
-    },
-    nightMode(){
-      return this.$store.state.theme.bgNight
-    }
-  },
-  watch: {
-    name(name) {
-      this.name = name;
-    },
-    id(id) {
-      this.id = id;
-    },
-   
-    // mode change message
-    theme:{
-      deep: true,
-      handler(){
-      if(!this.mounted)
-      setTimeout(() => {
-      this.show=true
-      this.message='Your mode has been updated!'
-      }, 200); 
-     this.hide()
-    }
-  },
-  // Specific message for each mode changed
-  // rainMode(){
-  //   this.show=true
-  //   this.message='You are now in rain mode!!'
-  //   setTimeout(() => {
-  //       this.message = "";
-  //       this.show = false;
-  //     }, 3200);
-  // },
-  //  fallMode(){
-  //   this.show=true
-  //   this.message='You are now in fall mode!!'
-  //   setTimeout(() => {
-  //       this.message = "";
-  //       this.show = false;
-  //     }, 3200);
-  // },
-  //  nightMode(){
-  //   this.show=true
-  //   this.message='You are now in night mode!!'
-  //   setTimeout(() => {
-  //       this.message = "";
-  //       this.show = false;
-  //     }, 3200);
+  //     playAudio(event, mix) {
+  //       delete mix["_id"];
+  //       delete mix["user_id"];
+  //       this.$refs.form.$children.map((child) => {
+  //       this.matchKey(mix,child.$refs.control?.name,child.$refs.control)
+
+  //       });
+  //     },
+  //     nameUpdate(e, name, id, show) {
+  //       this.name = name;
+  //       this.id = id;
+  //       this.userId = show;
+  //     },
+  //     backgroundUpdate(event, type){
+  //        let bg = localStorage.getItem("illucidBackground");
+  //       if(type){
+  //          window.clearTimeout(this.showTime);
+  //         if (type === "fall") {
+  //           this.theme.bgFall=true
+  //           this.theme.bgRain=false
+  //           this.theme.bgNight=false
+  //           this.show = false;
+  //         } else if (type === "rain") {
+  //           this.theme.bgFall=false
+  //           this.theme.bgRain=true
+  //           this.theme.bgNight=false
+  //           this.show = false;
+  //         } else if (type === "night") {
+  //           this.theme.bgFall=false
+  //           this.theme.bgRain=false
+  //           this.theme.bgNight=true
+  //           this.show=false
+  //         }
+  //       }else if(!type){
+  //         this.mounted=true
+  //         setTimeout(() => {
+  //               this.mounted=false
+  //         }, 1000); 
+  //         if (bg === "fall") {
+  //           this.theme.bgFall=true
+  //         } else if (bg === "rain") {
+  //           this.theme.bgRain=true
+  //         } else if (bg === "night") {
+  //           this.theme.bgNight=true
+  //         }
+  //       }
+
+  //     },
+  //     hide(){
+  //     this.showTime = setTimeout(() => {
+  //           this.message = "";
+  //           this.show = false;
+  //       }, 3200); 
+  //     }
+  //   },
+  //   data() {
+  //     return {
+  //       userId: false,
+  //       userName: "",
+  //       name: "",
+  //       id: "",
+  //       dayTime: "",
+  //       show:false,
+  //       message:'',
+  //       mounted:false,
+  //       showTime:null,
+
+  //     };
+  //   },
+  //   mounted() {
+  //     this.$store.commit("setDate");
+  //     AOS.init({
+  //       once: true,
+  //       delay: 100,
+  //     });
+  //     this.backgroundUpdate()
+  //     this.mounted=true
+  //   },
+
+  //   created() {
+  //     let id = localStorage.getItem("illucidId");
+  //     let name = localStorage.getItem("illucidName");
+  //     if (id && name.length) {
+  //       this.userId = true;
+  //       this.userName = name;
+  //       this.id = id;
+  //     } else {
+  //       this.userId = false;
+  //     }
+
+  //     const today = new Date();
+  //     const curHr = today.getHours();
+
+  //     if (curHr < 12) {
+  //       this.dayTime = "Good morning";
+  //     } else if (curHr < 18) {
+  //       this.dayTime = "Good afternoon";
+  //     } else {
+  //       this.dayTime = "Good evening";
+  //     }
+  //   },
+  //   computed:{
+  //     ...mapGetters(["theme"]),
+  //     rainMode(){
+  //       return this.$store.state.theme.bgRain
+  //     },
+  //     fallMode(){
+  //       return this.$store.state.theme.bgFall
+  //     },
+  //     nightMode(){
+  //       return this.$store.state.theme.bgNight
+  //     }
+  //   },
+  //   watch: {
+  //     name(name) {
+  //       this.name = name;
+  //     },
+  //     id(id) {
+  //       this.id = id;
+  //     },
+
+  //     theme:{
+  //       deep: true,
+  //       handler(){
+  //       if(!this.mounted)
+  //       setTimeout(() => {
+  //       this.show=true
+  //       this.message='Your mode has been updated!'
+  //       }, 200); 
+  //      this.hide()
+  //     }
+  //   },
+
   // }
-  
-}
 }
 </script>
 
 <style>
-.nav-link{
+.nav-link {
   font-size: 30px;
 }
-html, body {
-    margin: 0;
-    padding: 0;
-    border: 0;
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  border: 0;
 }
-.bg{
-  position: fixed; /*position: fixed;*/
+
+.bg {
+  position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
   background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),
-  url("~@/assets/night.svg");
+    url("~@/assets/night.svg");
   background-size: cover;
   background-position: center center;
   background-repeat: no-repeat;
   z-index: -1;
 }
-.bg.night{
+
+.bg.night {
   background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),
     url("~@/assets/night.svg");
   background-size: cover;
@@ -260,7 +403,8 @@ html, body {
   background-repeat: no-repeat;
 
 }
-.bg.rain{
+
+.bg.rain {
   background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),
     url("~@/assets/rain.svg");
   background-size: initial;
@@ -268,7 +412,8 @@ html, body {
   background-repeat: initial;
 
 }
-.bg.leaves{
+
+.bg.leaves {
   background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),
     url("~@/assets/darkLeaves.svg");
   background-size: initial;
@@ -276,9 +421,11 @@ html, body {
   background-repeat: initial;
 
 }
+
 .name {
   text-transform: capitalize;
 }
+
 .container {
   /* background: #00000047; */
   border-radius: 60px;
@@ -287,6 +434,7 @@ html, body {
   padding: 20px;
   padding-top: 0;
 }
+
 .welcome_user {
   font-family: "Coiny";
   color: #bbd6db;
@@ -296,6 +444,7 @@ html, body {
   opacity: 0;
   margin-top: 1.5em;
 }
+
 .welcome_user.show {
   opacity: 1;
   animation: fadeIn 1s forwards;
@@ -305,30 +454,37 @@ html, body {
   0% {
     opacity: 0;
   }
+
   100% {
     opacity: 1;
   }
 }
+
 @media (max-width: 545px) {
   .sound-container {
     grid-template-columns: 1fr 1fr !important;
   }
+
   .welcome_user {
     width: 90%;
     text-align: center;
   }
 }
+
 @media (max-width: 437px) {
   input[type="text"] {
     min-width: 75% !important;
   }
+
   .random-options {
     flex-wrap: wrap;
   }
 }
+
 @media (max-width: 280px) {
   .sound-container {
     grid-template-columns: 1fr !important;
   }
 }
 </style>
+
