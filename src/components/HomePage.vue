@@ -34,6 +34,7 @@
       />
     </div>
     <span v-bind:class="{ show: show }" id="toast">{{ message }}</span>
+    <FeedBack/>
 
   </div>
 </template>
@@ -43,12 +44,14 @@ import { mapMutations, mapGetters } from "vuex";
 import MixForm from "./MixForm.vue";
 import PopupSignup from "./PopupSignup.vue";
 import AOS from "aos";
+import FeedBack from '../components/FeedBack.vue'
 import "aos/dist/aos.css";
 export default {
   name: "HomePage",
   components: {
     MixForm,
     PopupSignup,
+    FeedBack
   },
 
   methods: {
@@ -144,6 +147,12 @@ export default {
     });
     this.backgroundUpdate()
     this.mounted=true
+    if (this.userName.length > 1) {
+        document.body.style.overflow='auto'
+      } else {
+        document.body.style.overflow='hidden'
+
+      }
   },
 
   created() {

@@ -301,20 +301,20 @@ export default {
     opacity: 0;
   }
 }
-input[type="text"] {
+input[type=text] {
   background-color: #f7f8ff;
   -webkit-border-radius: 45px;
   -moz-border-radius: 45px;
   border-radius: 45px;
   font-size: 15px;
-  height: 45px;
+  height: 45px!important;
   border: none;
   padding-left: 15px;
   min-width: 50%;
   margin-bottom: 10px;
   border: solid 1px #186aad;
 }
-input[type="text"][placeholder] {
+input[type=text][placeholder] {
   color: #656d79;
   font-size: 15px;
   font-weight: 500;
@@ -331,7 +331,7 @@ form {
 .play-controls {
   margin: 0 auto;
 }
-input[type="submit"] {
+input[type=submit] {
   background: #bbd6db;
   color: #196aad;
   border: none;

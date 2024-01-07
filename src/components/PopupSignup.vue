@@ -50,6 +50,8 @@ export default {
         setTimeout(() => {
           this.$emit("nameUpdate", e, this.name, id, true);
         }, 700);
+        document.body.style.overflow='auto'
+
       } else {
         this.error = "* Please enter your name to begin!";
         this.success = false;
@@ -84,7 +86,9 @@ export default {
   display: flex;
   justify-content: center;
   align-items: center;
+  overflow: hidden;
 }
+
 .overlay:target {
   visibility: visible;
   opacity: 1;
@@ -216,6 +220,9 @@ input[type="text"] {
   border: solid 1px #186aad;
   max-height: 50px;
 
+}
+.guest{
+  font-size: 15px;
 }
 
 @media screen and (max-width: 560px) {
