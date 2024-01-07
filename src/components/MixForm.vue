@@ -364,5 +364,13 @@ input[type="submit"] {
   padding-bottom: 22px;
   margin-top: 1em;
 }
+@media screen and (max-width: 560px) {
+  input[type=text] {
+    max-height: 40px!important;
+  }
+  input[type=submit]{
+    max-height: 45px!important;
+  }
+}
 
 </style>
