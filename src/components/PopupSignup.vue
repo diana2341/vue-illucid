@@ -104,7 +104,7 @@ export default {
   transition: all 5s ease-in-out;
   background-repeat: no-repeat;
   background-size: cover;
-  max-height: 90vh;
+  max-height: 80vh;
   overflow-x: hidden;
   overflow-y: scroll;
 }
