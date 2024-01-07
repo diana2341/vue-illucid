@@ -213,6 +213,8 @@ input[type="text"] {
   min-width: 50%;
   margin-bottom: 10px;
   border: solid 1px #186aad;
+  max-height: 50px;
+
 }
 
 @media screen and (max-width: 560px) {
