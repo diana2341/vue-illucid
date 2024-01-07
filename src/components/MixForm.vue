@@ -101,7 +101,10 @@ export default {
           this.show = false;
         }, 3200);
       } else {
+        let name = localStorage.getItem("illucidName");
+
         let data = {
+          user_name: name,
           mix_name: this.mixName,
           user_id: userId,
           light_rain_volume: this.checkVolume('rain'),
@@ -240,7 +243,7 @@ export default {
   border-radius: 10px;
   padding: 12px;
   position: fixed;
-  z-index: 1;
+  z-index: 100000;
   bottom: 30px;
   font-size: 24px;
   font-family: "Dongle";

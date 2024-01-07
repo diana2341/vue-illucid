@@ -126,6 +126,7 @@ export default {
   padding-bottom: 3px;
   min-width: 80px;
   z-index: 1;
+  text-align: center;
 }
 .creation_conatiner {
   position: relative;
