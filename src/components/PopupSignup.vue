@@ -185,7 +185,8 @@ input[type="submit"] {
   top: -5px;
   position: relative;
   cursor: pointer;
-  min-height: 50px;
+  height: 50px;
+  max-height: 50px;
 }
 input[type="text"][placeholder] {
   color: #656d79;
@@ -207,7 +208,7 @@ input[type="text"] {
   -moz-border-radius: 45px;
   border-radius: 45px;
   font-size: 15px;
-  height: 45px;
+  height: 50px;
   border: none;
   padding-left: 15px;
   min-width: 50%;
