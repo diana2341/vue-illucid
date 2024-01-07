@@ -34,7 +34,7 @@
       />
     </div>
     <span v-bind:class="{ show: show }" id="toast">{{ message }}</span>
-    <FeedBack/>
+    <FeedBack :name="userName"/>
 
   </div>
 </template>

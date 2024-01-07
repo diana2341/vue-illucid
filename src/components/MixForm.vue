@@ -232,6 +232,8 @@ export default {
 .sound-container {
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
+  padding-bottom: 30px;
+
 }
 #toast {
   visibility: hidden;
@@ -307,7 +309,7 @@ input[type=text] {
   -moz-border-radius: 45px;
   border-radius: 45px;
   font-size: 15px;
-  height: 45px!important;
+  height: 50px!important;
   border: none;
   padding-left: 15px;
   min-width: 50%;
@@ -366,7 +368,7 @@ input[type=submit] {
 }
 @media screen and (max-width: 560px) {
   input[type=text] {
-    max-height: 40px!important;
+    max-height: 50px!important;
   }
   input[type=submit]{
     max-height: 45px!important;

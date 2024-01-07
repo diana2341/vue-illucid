@@ -191,6 +191,8 @@ input[type="submit"] {
   cursor: pointer;
   height: 50px;
   max-height: 50px;
+  font-size: 14px;
+
 }
 input[type="text"][placeholder] {
   color: #656d79;
@@ -206,6 +208,7 @@ form {
   justify-content: center;
   right: -30px;
 }
+
 input[type="text"] {
   background-color: #f7f8ff;
   -webkit-border-radius: 45px;
@@ -224,7 +227,13 @@ input[type="text"] {
 .guest{
   font-size: 15px;
 }
+#popup1 input[type=submit]{
+  max-width: initial!important;
+  right: 4.5em!important;
+  font-size: 14px;
 
+  
+}
 @media screen and (max-width: 560px) {
   .popup h2 img {
     display: none;

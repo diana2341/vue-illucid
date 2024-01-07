@@ -1,15 +1,22 @@
 <template>
-  <div id="app">
-    <router-view />
-  </div>
+  <v-app>
+      <router-view/>
+  </v-app>
 </template>
 
 <script>
 
 export default {
-  name: "App",
-}
-</script>
-<style>
+  name: 'App',
 
+  data: () => ({
+    //
+  }),
+};
+</script>
+
+<style>
+.theme--light.v-application{
+background: transparent!important;
+}
 </style>
