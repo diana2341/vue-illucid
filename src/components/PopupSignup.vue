@@ -185,6 +185,7 @@ input[type="submit"] {
   top: -5px;
   position: relative;
   cursor: pointer;
+  min-height: 50px;
 }
 input[type="text"][placeholder] {
   color: #656d79;
