@@ -81,6 +81,9 @@ export default {
   /* visibility: hidden;
   opacity: 0; */
   z-index: 10000;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 .overlay:target {
   visibility: visible;
@@ -101,6 +104,9 @@ export default {
   transition: all 5s ease-in-out;
   background-repeat: no-repeat;
   background-size: cover;
+  max-height: 90vh;
+  overflow-x: hidden;
+  overflow-y: scroll;
 }
 
 .popup h2 {
@@ -135,7 +141,6 @@ export default {
 
 .popup .content {
   max-height: 30%;
-  overflow: auto;
   color: white;
   text-align: center;
   font-family: "Coiny";
@@ -207,5 +212,19 @@ input[type="text"] {
   min-width: 50%;
   margin-bottom: 10px;
   border: solid 1px #186aad;
+}
+
+@media screen and (max-width: 560px) {
+  .popup h2 img {
+    display: none;
+  }
+  .popup h2 {
+    text-align: center;
+    /* font-size: 25px; */
+
+  }
+  /* .popup .content {
+    font-size: 20px;
+  } */
 }
 </style>
