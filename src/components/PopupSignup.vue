@@ -162,7 +162,7 @@ p {
     width: 70%;
   }
   .popup {
-    width: 70%;
+    width: 85%;
   }
 }
 .form-container {
@@ -231,8 +231,7 @@ input[type="text"] {
   max-width: initial!important;
   right: 4.5em!important;
   font-size: 14px;
-
-  
+  min-height: 50px;
 }
 @media screen and (max-width: 560px) {
   .popup h2 img {
