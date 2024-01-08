@@ -1,6 +1,6 @@
 # vue-illucid
 # Illucid Beats V2
-![Screenshot](./images/readme.png)
+<img width="1490" alt="Screen Shot 2024-01-08 at 9 52 47 AM" src="https://github.com/diana2341/vue-illucid/assets/59631643/c24da8c3-f037-487b-800b-577f657f98b8">
 
 
 ⭐️⭐️You can checkout the deployed version of this application here on [Netlify](https://illucidbeats.netlify.app/#/)⭐️⭐️
