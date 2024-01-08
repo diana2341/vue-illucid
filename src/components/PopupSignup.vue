@@ -51,6 +51,10 @@ export default {
           this.$emit("nameUpdate", e, this.name, id, true);
         }, 700);
         document.body.style.overflow='auto'
+        window.scrollTo({
+          top: 0,
+          behavior: 'smooth', 
+        });
 
       } else {
         this.error = "* Please enter your name to begin!";
