@@ -5,7 +5,7 @@
         @click="deleteAudio(mix._id)"
         src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAABmJLR0QA/wD/AP+gvaeTAAAAo0lEQVRIieWTTQqDMBCFP6xb7yg9Qo/SHik3qUgXFlxWqGI3WYQ4Jc5I0NIHswnM+5lH4F9wAXpg9tP7NzVcQGIdFxIWFhcJzBk4D4Yb9vtfYzKpg2aDucWuJHDPLbAlwcJc9gQSTsAbfcEjUMZkUoIJeKi9Q+tFkgJg60Hc+SZg6UHc2S3BIQVUJ7J0oDJVAQPr/8DL76hwBp4ryDug1pL/Dj5MW2BhteGWuAAAAABJRU5ErkJggg=="
       />
-      <div @click="$emit('playAudio', $event, mix)">{{ mix.mix_name }}</div>
+      <div @click="$emit('playAudio', $event, mix)" style="width:100%">{{ mix.mix_name }}</div>
     </div> 
     <div v-if="loading" id="loading"></div>
     <div v-if="allMixes.length < 1 && !loading">No mixes</div>

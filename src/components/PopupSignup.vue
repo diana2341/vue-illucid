@@ -9,7 +9,7 @@
             noises you don’t want to hear, whether it's to help you sleep or
             help you concentrate while working, You can create and save as many
             mixes as you want. To begin just click on the icons and adjust each
-            volume to your desire and that's it! you can now save that mix and
+            volume to your desire and that's it! You can now save that mix and
             listen to it later or just listen to it on the spot! To begin please
             enter your name below ! Enjoy ☺
           </p>
