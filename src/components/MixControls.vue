@@ -49,10 +49,10 @@ export default {
         this.$emit("updateVolume", null, audio.nextElementSibling.name, 0);
       } else {
         audio.loop = true;
-        this.volume = 1;
-        audio.nextElementSibling.value = 1;
+        this.volume = 0.3;
+        audio.nextElementSibling.value = 0.3;
 
-        this.$emit("updateVolume", event, audio.nextElementSibling.name, 1);
+        this.$emit("updateVolume", event, audio.nextElementSibling.name, 0.3);
         audio.play();
       }
     },
